@@ -1,0 +1,123 @@
+{% extends 'index.html' %}
+
+{#206b00303d1d43c1f6cd12f7aef3d61b#}
+{% block contents %}
+<div class="container-fluid" style="padding-top : 100px;">
+    <br/>
+    <div class="text-lg-center">
+        {{ data[1] }} 검색 결과 입니다.
+    </div>
+    <br/><br/><br/><br/>
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <div id="map" style="width:100%;height:1050px;"></div>
+        </div>
+        <div class="col-2">
+            <form>
+                준비중
+            </form>
+        </div>
+    </div>
+</div>
+
+    <!-- Button trigger modal -->
+{#<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">#}
+{#  Launch demo modal#}
+{#</button>#}
+
+<!-- Modal -->
+{#<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">#}
+{#  <div class="modal-dialog" role="document">#}
+{#    <div class="modal-content">#}
+{#      <div class="modal-header">#}
+{#        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>#}
+{#        <button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+{#          <span aria-hidden="true">&times;</span>#}
+{#        </button>#}
+{#      </div>#}
+{#      <div class="modal-body">#}
+{#          <table class="table">#}
+{#              <thead class="thead-dark">#}
+{#                <tr>#}
+{#                    <th colspan="4">의사 정보</th>#}
+{#                </tr>#}
+{#              </thead>#}
+{#              <tbody>#}
+{#                <tr>#}
+{#                    <td> 의사 이름 </td>#}
+{#                    <td> 이상용 </td>#}
+{#                    <td> 병원 이름 </td>#}
+{#                    <td> 잎사귀~~치과 </td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                    <td colspan="4">#}
+{#                        의사 연혁 ~~~~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#}
+{#                        의사 연혁 ~~~~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#}
+{#                        의사 연혁 ~~~~aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#}
+{#                    </td>#}
+{#                </tr>#}
+{##}
+{#              </tbody>#}
+{#          </table>#}
+{#      </div>#}
+{#      <div class="modal-footer">#}
+{#        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
+{#        <button type="button" class="btn btn-primary">Save changes</button>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+
+
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=206b00303d1d43c1f6cd12f7aef3d61b"></script>
+    <script>
+		var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(37.566760, 126.977606), // 지도의 중심좌표
+            level: 7 // 지도의 확대 레벨
+        };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+        // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+        var mapTypeControl = new kakao.maps.MapTypeControl();
+
+        // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+        // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+        map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+        // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+        var zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+
+
+        {% for i in data[0] %}
+            var position = new kakao.maps.LatLng({{ i.dochospital_x|float }}, {{ i.dochospital_y|float }});
+
+            var marker = new kakao.maps.Marker({
+            position: position,
+            clickable:true
+            });
+            marker.setMap(map);
+
+        {% endfor %}
+
+        {#var positions = []#}
+        {#    positions.push(content="", latlng= new kakao.maps.LatLng({{ i.dochospital_x|float }}, {{ i.dochospital_y|float }}))#}
+        {##}
+        {#{% for i in data[0] %}#}
+        {#    var markerPosition  = new kakao.maps.LatLng({{ i.dochospital_x|float }}, {{ i.dochospital_y|float }});#}
+        {##}
+        {##}
+        var marker = new kakao.maps.Marker({
+            position: markerPosition,
+            clickable:true
+         });
+        marker.setMap(map);
+        {#{% endfor %}#}
+
+
+
+	</script>
+{% endblock contents %}

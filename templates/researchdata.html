@@ -1,0 +1,59 @@
+<div class="container" style="width:700px; margin-bottom: 100px">
+    <p class="font-weight-bold" style="font-size:30px; margin-top: 20px">beautifulsoup, selenium을 활용한 웹 크롤링</p>
+    <br>
+    <div class="row justify-content-lg-center">
+        <img src="{{ url_for('static',filename='crawling.JPG') }}" width="400px" height = 400px alt="웹 크롤링 사진">
+    </div>
+    <br>
+        <p class="font-weight-bold alert alert-primary" style="font-size:20px">증상 데이터 (약 <b>20</b>만 개)</p>
+    <br>
+    <div class="row" style="font-size:15px">
+        <b>1. 각 전문과목별 대표 키워드를 정해 검색 엔진을 통한 환자들에 대한 데이터 크롤링</b>
+    </div>
+    <br>
+    <div class="row" style="font-size:15px">
+        <b>2. 학회 혹은 병원페이지에서 일반인들이 자신의 증상에 대해 묻고 치과의사가 답한 Q&A 데이터</b>
+    </div>
+    <br>
+    <div class="row" style="font-size:15px">
+        <b>3. 증상 설명 데이터</b>
+    </div>
+    <br>
+
+    <p class="font-weight-bold alert alert-primary" style="font-size:20px; margin-top: 20px">의사 데이터</p>
+
+    <div class="row" style="font-size:20px">
+        <b>1. 서울시 공공 데이터 (병/의원 약 5000개)</b>
+    </div>
+    <div class="row">
+        <div>
+            <br>
+    <p>&nbsp;<b>1) 병/의원 이름 </b></p>
+    <p>&nbsp;<b>2) 병/의원 주소 및 좌표</b></p>
+    <p>&nbsp;<b>3) 병/의원별 근무 의사 현황 (의사 수, 전문의 수, 일반의 수)</b></p>
+    <p>&nbsp;<b>4) 개업일자, 병원 홈페이지</b></p>
+        </div>
+    </div>
+    <div class="row" style="font-size:20px">
+        <b>2. 전문의, 인정의 데이터를 얻기 위해</b>
+    </div>
+    <div class="row">
+        <div>
+            <br>
+    <p>&nbsp;<b>1) 치과 관련 학회 (학회에서 전문의, 인정의 자격시험 주관) 크롤링 </b></p>
+            <p>&nbsp;<b>2) 각 병원 홈페이지에 기재되어 있는 의사 약력 수집 </b>
+            <p>
+        <p>&nbsp;각 병원 홈페이지가 서울시 공공 데이터에 기재되어 있기는 했지만 존재하지 않고, 틀린 병원들도 있었고,
+        각 홈페이지가 구성이 모두 상이하거나 의사 약력 데이터가 텍스트가 아닌 이미지화되어 있는 경우도 있었기 때문에 이 부분은 수작업으로 진행.<br>
+        </p>
+            <p>&nbsp;
+                <mark>의사 약력이 필요했던 이유</mark>는
+            의사와 논문을 매칭할 때 동명이인인 경우 등에서 저자를 특정할 수 없는 경우가 있기 때문에 의사에 대한 자세한 정보가 필요하였음.
+            이 과정에서 전문의, 인정의 여부에 대한 정보가 수집되었고, 의사의 전문도 측정할 때 활용하기로 함.</p>
+        <p>&nbsp;<b>3) 모두닥, 하이닥 등 의사 정보가 있는 사이트 크롤링 </b></p>
+
+    <p>&nbsp;논문 데이터는 제목, 저자 초록, 키워드를 중심으로 수집하였고, <a href="http://kdbase.medric.or.kr/">한국치의학논문데이터 </a>사이트와 해외 치의학 논문사이트에서
+        진행하였으며 데이터의 개수는 약 6만 5천개 정도 됨.</p>
+        </div>
+    </div>
+</div>

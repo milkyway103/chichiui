@@ -1,0 +1,108 @@
+<div class="container" style="width:700px;">
+    <div class="row">
+        <h3>치치의</h3>
+    </div>
+    <div class="row">
+        <h4>환자의 증상별 치과의사 매칭 시스템</h4>
+    </div>
+    <div class="row" style="margin-bottom: 100px">
+        <p>
+            치과는 두려움의 대상이기도 하지만, 동시에 살면서 꼭 한 번은 가게 되는 곳이기도 합니다.
+            충치가 생겼다든지 하는 이유로 치과를 가야 하는 상황에서, 사람들은 어떤 것을 기반으로 결정을 내릴까요?
+            사람들은 일반적으로 지인의 추천이나 가까운 곳, 혹은 자신의 증상을 포털 사이트에 검색해본 뒤 그 결과를 바탕으로 어느 치과에 갈지에 대한 결정을 내립니다. <br> <br>
+            그런데 이렇게 간 치과에서 <b>문제</b>가 생긴다면 어떻게 될까요? <br> <br>
+            <a href="#">나에게도 의료사고가 생기다니!</a> <br>
+            <a href="#">멀쩡한 치아까지 임플란트...450명, 과잉진료 피해 호소</a> <br>
+            <a href="#">"7살 아이 치아도 갈아"...450명 공포로 몰아넣은 치과의사</a> <br> <br>
+            치과에서 과잉진료 문제는 빈번히 발생합니다. 저희는 이러한 과잉진료 문제의 근본적인 원인으로 <br>
+            <b>소비자가 의료기관을 선택하는 기준이 모호하고, 주변 지인의 추천에 의존</b>하고 있다는 점을 꼽았습니다. <br>
+            즉, 어떤 의사가 어떤 전문분야에 얼마나 전문적인지를 판단하는 기준이 상당히 모호했습니다.
+            <br><br>
+            이러한 문제를 보완하기 위해 치의학계에서는 2008년부터 <b>전문의 제도</b>가 도입되었습니다. <br>
+            <div class="col-6">
+                <p>Q. 의원급 즉, 집 근처 치과를 이용하게 된다면 어떤 치과의사에게 진료를 받고 싶나?</p>
+            </div>
+            <div class="col-6">
+                <p>Q. 전문의가 아니지만, 해당 전공 분야의 진료경험이 많은 치과의사에게 전문의 자격 취득의 기회를 주는 것이 필요한가?</p>
+            </div>
+            <div class="col-6">
+                <canvas id="overviewchart1" width="500" height="500"></canvas>
+            </div>
+            <div class="col-6">
+                <br>
+                <canvas id="overviewchart2" width="500" height="450"></canvas>
+            </div>
+            <br>
+            위와 같이 사람들은 전문의에게 치과 진료를 받고 싶다는 생각이 강했지만, 이 제도에도 문제는 있었습니다. <br>
+            치과는 다른 분야보다 전문의 제도가 늦게 시행된 편인데요, 이러한 문제를 보완하기 위해 치과 관련 학회에서 자체적으로 시험 등을 통하여 인정의 자격을 주는 제도가 이미 존재하고 있었습니다.<br>
+            <br>
+            즉, 이미 존재하고 있던 인정의에, 전문의 제도가 시행됨으로써 전문의와 인정의가 혼재하고 있는 상황이 발생했습니다.
+            심지어 전문의 제도가 도입되던 초기에는 이 제도가 시행되던 년도 이전에 이미 의사 자격증을 취득한 사람들은 전문의 자격증 시험을 응시할 수 없도록 하여
+            <b>전문의 과정을 가르치는 의사가 전문의 자격증을 취득하지 못한 웃지 못할 상황</b>도 생겼습니다.
+            <br><br>
+            <div class="alert alert-warning" role="alert" style="width: 700px">
+                <b>문제 1</b> : 어떤 의사가 어떤 분야에 대해 얼마나 전문적인지 알기 어렵다. <br>
+            </div>
+            한편 치과에는 많은 세부 진료과목이 있습니다. 전문의나 인정의 자격증도 이러한 진료과목을 토대로 주어지는데요,
+            치과 분야의 전문지식을 가지고 있는 사람이 아닌 이상 이 진료과목에 대해 자세히 알기란 거의 불가능에 가깝습니다.
+            <img src="{{ url_for('static',filename='dent_courses.jpg') }}" width="700px" height = 1000px alt="치과 전문과목별 진료 분야">
+            <br><br>
+            <div class="alert alert-warning" role="alert" style="width: 700px">
+                <b>문제 2</b> : 환자 각각의 증상을 어떤 전문분야에서 전문적으로 다루는지 알지 못한다. <br>
+            </div>
+            그 동안 소비자로서는 어떤 의사가 어떤 분야에 대해 얼마나 전문적인지 명시적으로 알기도 어려울 뿐더러,
+            그 정보를 알고 있다고 해도 각자의 증상을 어떤 전문분야에서 전문적으로 다루는지 알기도 힘들었습니다.
+            <br><br>
+            그렇다면 소비자로서는 증상과 지역 정도의 간단한 정보만을 입력하게 하고, <br>그 조건에 맞는 의사들을 보여주면 어떨까요?
+            <br><br>
+            <div class="alert alert-primary" role="alert" style="width: 700px">
+                <b>SOLUTION!</b>  <br>의사들의 전문분야, 전문도를 환자의 증상과 매칭하여 보여주자!
+            </div>
+
+
+        </p>
+    </div>
+</div>
+<script>
+    var ctx = document.getElementById('overviewchart1').getContext('2d');
+        var data = {
+            // The type of chart we want to create
+            type: 'pie',
+            // The data for our dataset
+            data: {
+                datasets: [{
+                    data: [92.1, 7.9],
+                    // These labels appear in the legend and in the tooltips when hovering different arcs
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                    ]
+                }],
+                labels:['전문과목의 전문의 자격 취득 치과의사','동네치과는 전공여부 무관']
+            },
+            // Configuration options go here
+            options: {}
+        };
+    var chart = new Chart(ctx, data);
+    var ctx2 = document.getElementById('overviewchart2').getContext('2d');
+        var data2 = {
+            // The type of chart we want to create
+            type: 'pie',
+            // The data for our dataset
+            data: {
+                datasets: [{
+                    data: [63.6, 36.4],
+                    // These labels appear in the legend and in the tooltips when hovering different arcs
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                    ]
+                }],
+                labels:['예','아니오']
+            },
+            // Configuration options go here
+            options: {}
+        };
+    var chart2 = new Chart(ctx2, data2);
+
+</script>

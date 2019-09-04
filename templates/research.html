@@ -1,0 +1,23 @@
+{% extends 'mainindex.html' %}
+{% block contents %}
+<div class="container">
+    <div class="row">
+      <div class="col-3">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <a class="nav-link {% if page=='overview' %}active{% endif %}" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true" style="">분석 개요</a>
+          <a class="nav-link {% if page=='data' %}active{% endif %}" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">분석 데이터</a>
+          <a class="nav-link {% if page=='datapre' %}active{% endif %}" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">데이터 전처리</a>
+          <a class="nav-link {% if page=='model' %}active{% endif %}" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">분석 모델</a>
+        </div>
+      </div>
+      <div class="col-9">
+        <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade {% if page=='overview' %}show active{% endif %}" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">{% include 'researchoverview.html' %}</div>
+          <div class="tab-pane fade {% if page=='data' %}show active{% endif %}" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">{% include 'researchdata.html' %}</div>
+          <div class="tab-pane fade {% if page=='datapre' %}show active{% endif %}" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">{% include 'researchdatapre.html' %}</div>
+          <div class="tab-pane fade {% if page=='model' %}show active{% endif %}" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">{% include 'researchmodel.html' %}</div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock contents %}

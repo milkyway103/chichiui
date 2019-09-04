@@ -1,0 +1,150 @@
+
+{% extends 'mainindex.html' %}
+
+
+{% block contents %}
+<style>
+.swiper-container {
+      width: 60%;
+      height: 700px;
+    }
+    .swiper-slide {
+      text-align: center;
+        display:flex;
+        justify-content:center;
+      align-items: center;
+    }
+
+    #homeinput input {
+        margin-top: 40px;
+        margin-bottom: 40px;
+        display: block;
+        border: none;
+        border-bottom: 2px solid #ebebeb;
+    }
+        input:focus, select:focus {
+        color: #222;
+        border-bottom: 2px solid #4966b1;
+        }
+
+    h2,h3{
+        float: left;
+        margin-bottom: 40px;
+        display: block;
+    }
+
+
+</style>
+
+  <div class="swiper-container">
+    <form class="swiper-wrapper" action="/matching" method="POST">
+          <div class="swiper-slide">
+              <div class="container" id="homeinput" style="width: 80%">
+                <h2>2</h2>
+                  <div class="form-group-1">
+                      <input class="form-control" type="text" name="name" id="name" placeholder="name"/>
+                      <div class="row">
+                          <div class="col">
+                              <label for="exampleFormControlSelect1" style="float:left">성별</label>
+                                <select class="form-control" id="sex_select">
+                                  <option>남자</option>
+                                  <option>여자</option>
+                                </select>
+                          </div>
+                          <div class="col">
+                              <label for="exampleFormControlSelect1" style="float:left">나이</label>
+                                <select class="form-control" id="sex_select">
+                                  <option selected>나이를 선택해주세요</option>
+                                    {% for i in range(1,100) %}
+                                  <option>{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                          </div>
+
+                      </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="exampleFormControlTextarea1" style="float: left">증상을 선택하기 힘들면 적어주세요</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                  </div>
+
+                </div>
+      </div>
+      <div class="swiper-slide">
+           <div class="container" id="homeinput" style="width: 80%">
+                <h2>212312313</h2>
+                  <div class="form-group-1">
+                      <input class="form-control" type="text" name="name" id="name" placeholder="name" required />
+                      <div class="row">
+                          <div class="col">
+                              <label for="exampleFormControlSelect1" style="float:left">성별</label>
+                                <select class="form-control" id="sex_select">
+                                  <option>남자</option>
+                                  <option>여자</option>
+                                </select>
+                          </div>
+                          <div class="col">
+                              <label for="exampleFormControlSelect1" style="float:left">나이</label>
+                                <select class="form-control" id="age_select">
+                                  <option selected>나이를 선택해주세요</option>
+                                    {% for i in range(1,100) %}
+                                  <option>{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                          </div>
+
+                      </div>
+                      <input class="form-control" type="text" name="sick1" id="sick1" placeholder="sick1" required />
+                      <input class="form-control" type="text" name="sick2" id="sick2" placeholder="sick2" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="exampleFormControlTextarea1" style="float: left">증상을 선택하기 힘들면 적어주세요</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                  </div>
+
+                    <input type="submit" class="form-control" value="제출">
+
+           </div>
+      </div>
+    </form>
+    <!-- Add Arrows -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </div>
+
+
+
+
+      <link rel="stylesheet"  type="text/css" href={{ url_for('static', filename='css/swiper.min.css') }}>
+      <script src="{{ url_for('static', filename = 'js/swiper.min.js') }}" ></script>
+          <link rel="stylesheet"  type="text/css" href={{ url_for('static', filename='css/choices.css') }}>
+      <script src="{{ url_for('static', filename = 'js/choices.js') }}" ></script>
+
+
+<script type="text/javascript">
+var swiper = new Swiper('.swiper-container', {
+    effect:"slide", //"slide", "fade", "cube", "coverflow" or "flip"
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    simulateTouch : false
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+      var resetMultiple = new Choices('#reset-multiple', {
+        removeItemButton: true,
+      });
+});
+
+
+
+
+  </script>
+
+
+
+
+{% endblock contents %}

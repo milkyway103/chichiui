@@ -1,0 +1,599 @@
+{% extends 'mainindex.html' %}
+
+{% block contents %}
+    <style>
+    #doctable>div>*{
+        margin-left:10px;
+    }
+    #doctable b{
+        margin-left:10px;
+    }
+
+    </style>
+    <div class="container-fluid">
+    <div class="row" stylem="margin-bottom: 10px">
+                <div class = "col">
+                    <div class="alert alert-success" role="alert" id="searchalert">
+                        <b>{{ locate }}</b>에서 <b>{{ keyword }}</b>에 대해<b> {{ hospitallist|length }}</b> 개의 병원과 <b>{{ doctorlist|length }}</b> 명의 의사가 매칭되었습니다.
+                    </div>
+                    <div class="alert alert-danger" role="alert" id="researchalert" style="display: none">
+                        <b>검색된 결과가 동일하거나 없습니다.</b>
+                    </div>
+                </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-1 text-center" style="margin-bottom: 20px">
+            <input type="checkbox" id="categorycheck" data-height="48" data-toggle="toggle" data-on="의사" data-off="병원" data-onstyle="success" data-offstyle= "info">
+        </div>
+            <div class="col-xl-11">
+                <div class="row" id="hostable">
+                    <div class="col-10 input-group">
+                        <select id="courselist">
+                            <option selected>전체 과목</option><option>치과</option><option>구강내과</option><option>구강병리과</option><option>구강악안면방사선과</option>
+                            <option>구강악안면외과</option><option>구강악안면외과</option><option>소아치과</option><option>예방치과</option><option>치과교정과</option><option>치과보존과</option><option>치과보철과</option><option>치주과</option>
+                        </select>
+                        <input type="text" placeholder="결과 내 재검색" class="form-control form-control-lg" id="hosresearch"/>
+
+                     </div>
+                    <input type="button" class="btn btn-warning" id="resethos" value="리셋하기" style="margin-right: 2px; display:none">
+                    <input type="button" class="btn btn-info" id="hosresearchbtn" value="검색하기">
+                </div>
+
+
+                <div class="row" id="doctable" style="display: none">
+                    <div class="col-10 input-group">
+                        <label class="input-group-text"><b>인정의 여부</b>
+                        <input type="checkbox" id="recocheck"  data-toggle="toggle" data-on="ON" data-off="OFF" data-onstyle="success" data-offstyle= "danger">
+                        </label>
+                        <label class="input-group-text"><b>전문의 여부</b>
+                        <input type="checkbox" id="speccheck"  data-toggle="toggle" data-on="ON" data-off="OFF" data-onstyle="success" data-offstyle= "danger">
+                        </label>
+                        <input type="text" placeholder="결과 내 재검색" class="form-control form-control-lg" id="docresearch"/>
+                    </div>
+                    <input type="button" class="btn btn-primary" id="resetdoc" value="리셋하기" style="margin-right: 2px; display:none">
+                        <input type="button" class="btn btn-success" id="docresearchbtn" value="검색하기">
+                </div>
+        </div>
+
+
+
+    </div>
+
+        <div class="row">
+            <div class="col-9">
+                <div id="map" style="height:700px;"></div>
+            </div>
+            <div class="col-3  overflow-auto" style="height: 700px;" id="infopage">
+                            <div id="doctorpage" style="display: none">
+                                {% for doctor in doctorlist %}
+                                    <div  id="doc_{{ doctor.id }}" class="card" >
+                                        <div class="card-header" class="doctor_"+{{ loop.index }}>
+                                            {{ loop.index }}번째 의사
+                                        </div>
+                                        <div class="card-body" class="doctor_"+{{ loop.index }}>
+                                            <h5 class="card-title"> {{ doctor.name }}&nbsp;
+                                            {% if doctor.specialist %}
+                                                <span class="badge badge-info">전문의</span>
+                                            {% endif %}
+                                            {% if doctor.recognition %}
+                                                <span class="badge badge-success">인정의</span>
+                                            {% endif %}
+                                            </h5>
+                                            <p class="card-text">{{ doctor.hosname }}</p>
+                                            <canvas id="doctorChart{{ doctor.id }}"></canvas>
+                                            <button class="btn btn-outline-primary btn-sm doctorinfo" data-toggle="modal" data-target="#doctorModal{{ doctor.id }}">더 많은 정보 보기</button>
+                                            <!-- modal-->
+                                                <div class="modal fade doctormodal" id="doctorModal{{ doctor.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                        <h5 class="modal-title" id="docname">{{ doctor.name }}</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                          <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                          <p>{{ doctor.docinfo | safe }}</p>
+                                                        <p>{{ doctor.hoslocate }}</p>
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">닫기</button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                            <!-- modal end -->
+                                        </div>
+                                    <br>
+                                </div>
+                                {% endfor %}
+                            <div class="row text-center" id="nosearchdoctor"><h2>검색결과가 없습니다.</h2></div>
+                </div>
+                        <div id="hospage" style="display: block">
+                                        {% for hospital in hospitallist %}
+                                    <div id="hos_{{ hospital.id }}" class="card">
+                                        <div class="card-header">
+                                            {{ loop.index }}번째 병원
+                                        </div>
+                                        <div class="card-body" class="hos_"+{{ loop.index }}>
+                                            <h5 class="card-title"> {{ hospital.name }}&nbsp;
+                                            </h5>
+                                            <p class="card-subtitle text-muted">{{ hospital.region }}</p>
+                                            <br>
+                                            {% if hospital.coursename %}
+                                            <p class="card-text"><b>진료과목</b> : {{ hospital.coursename }}</p>
+                                            {% endif %}
+                                            {% if hospital.age %}
+                                            <p class="card-text"><b>개원 년수</b> : {{ hospital.age }}년</p>
+                                            {% endif %}
+                                            {% if hospital.tellnum %}
+                                                <p class="card-text"><b>전화번호</b> : {{ hospital.tellnum }}</p>
+                                            {% endif %}
+
+                                            {% if hospital.homepage %}
+                                                <a href="{{ hospital.homepage }}" class="card-link">홈페이지 바로가기</a>
+                                            {% endif %}
+                                            <br>
+                                            <button class="btn btn-outline-primary btn-sm doctorinfo" data-toggle="modal" data-target="#hospitalModal{{ hospital.id }}">속해있는 의사 보기</button>
+
+                                            <div class="modal fade bd-example-modal-lg hospitalModal" id="hospitalModal{{ hospital.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                          <h5 class="modal-title" id="hosname"><b>{{ hospital.name }}</b> 소속 의사</h5>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                      {% if hos_doc[hospital.id] %}
+                                                          {% for doctor in hos_doc[hospital.id] %}
+                                                            <div class="card">
+                                                              <div class="card-body">
+                                                                  <h5 class="card-title"> <b>{{ doctor.name }}&nbsp;</b>
+                                                                    {% if doctor.specialist %}
+                                                                        <span class="badge badge-info">전문의</span>
+                                                                    {% endif %}
+                                                                    {% if doctor.recognition %}
+                                                                        <span class="badge badge-success">인정의</span>
+                                                                    {% endif %}
+                                                                    {% if not doctor.recognition and not doctor.specialist %}
+                                                                        <span class="badge badge-warning">취득 여부 확인 불가능</span>
+                                                                    {% endif %}
+
+                                                                </h5>
+                                                              </div>
+                                                            </div>
+                                                        <!-- modal-->
+                                                          {% endfor %}
+                                                      {% else %}
+                                                          <div class="card">
+                                                              <div class="card-body">
+                                                                  <h5 class="card-title">
+                                                                    <b>현재 정보 준비중 입니다.</b>
+                                                                </h5>
+                                                              </div>
+                                                            </div>
+                                                      {% endif %}
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">닫기</button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                        </div>
+                                    <br>
+                                </div>
+                                {% endfor %}
+                        <div class="row text-center" id="nosearchhos"><h2>검색결과가 없습니다.</h2></div>
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+    window.onload = function () {
+    {% if hospitallist %}
+        $("#nosearchhos").hide()
+    {% else %}
+        $("#nosearchhos").show()
+    {% endif %}
+    {% if doctorlist %}
+        $("#nosearchdoctor").hide()
+    {% else %}
+        $("#nosearchdoctor").show()
+    {% endif %}
+    }
+
+var mapmarkers = []
+    $("#resetdoc").click(function () {
+        {% for doctor in doctorlist %}
+            $('#doc_{{ doctor.id }}').show()
+        {% endfor %}
+        setMarkers_filter(null)
+        mapmarkers = []
+        setMarkers_doctor(map)
+        $("#docresearchbtn").show()
+      $("#resetdoc").hide()
+    $("#researchalert").hide()
+    $("#nosearchdoctor").hide()
+    })
+
+    $("#resethos").click(function () {
+        {% for hospital in hospitallist %}
+            $('#hos_{{ hospital.id }}').show()
+        {% endfor %}
+    setMarkers_filter(null)
+    mapmarkers = []
+    setMarkers_hospital(map)
+       $("#hosresearchbtn").show()
+      $("#resethos").hide()
+    $("#researchalert").hide()
+    $("#nosearchhos").hide()
+    })
+
+
+    $("#hosresearchbtn").click(function () {
+        var hidecount = 0
+        var showcount = 0
+         var hoskeyword = $("#hosresearch").val()
+        var coursename = $("#courselist").val()
+
+        var filtermarkerlist = []
+
+         {% for hospital in hospitallist %}
+             var hosflag = 0
+             if("{{ hospital.name }}".indexOf(hoskeyword)!=-1){
+                 hosflag=1
+                 if(coursename!="전체 과목") {
+                     var coursenamelist = "{{ hospital.coursename }}"
+                     coursenamelist = coursenamelist.split(", ")
+                     if(coursenamelist.includes(coursename)==true){
+                     hosflag=1
+                        }
+                        else{
+                            hosflag=0
+                        }
+                 }else{
+                     hosflag=1
+                 }
+
+
+                if(hosflag==0){
+                    hidecount+=1
+                    $('#hos_{{ hospital.id }}').hide()
+                }else{
+                    showcount+=1
+                    filtermarkerlist.push({{ hospital.id }})
+                }
+            }else{
+                 hidecount+=1
+                 $('#hos_{{ hospital.id }}').hide()
+         }
+         {% endfor %}
+     if(hidecount<1){
+         $("#researchalert").show()
+
+     }else if(showcount==0){
+         $("#nosearchhos").show()
+         $("#researchalert").show()
+         $("#hosresearchbtn").hide()
+         $("#resethos").show()
+         setMarkers_hospital(null);
+     }
+     else {
+         $("#hosresearchbtn").hide()
+         $("#resethos").show()
+         $("#nosearchhos").hide()
+         setMarkers_hospital(null);
+         reloadmap(1, filtermarkerlist)
+         setMarkers_filter(map)
+     }
+    })
+
+
+     $("#docresearchbtn").click(function () {
+         var hidecount = 0
+        var showcount = 0
+         var dockeyword = $("#docresearch").val()
+        var recon = $("#recocheck").is(":checked")
+        var spec = $("#speccheck").is(":checked")
+        var filtermarkerlist = []
+
+         {% for doctor in doctorlist %}
+             var docflag = 0
+             if("{{ doctor.name }}".indexOf(dockeyword)!=-1){
+                 docflag=1
+                if(recon == true){
+                 {% if doctor.recognition %}
+                     docflag=1
+                 {% else %}
+                     docflag=0
+                 {% endif %}
+                }
+                if(docflag==1 && spec == true){
+                 {% if doctor.specialist %}
+                     docflag=1
+                 {% else %}
+                     docflag=0
+                 {% endif %}
+             }
+                if(docflag==0){
+                    hidecount+=1
+                    $('#doc_{{ doctor.id }}').hide()
+                }else{
+                    showcount+=1
+                    filtermarkerlist.push({{ doctor.id }})
+                }
+            }else{
+                 hidecount+=1
+                 $('#doc_{{ doctor.id }}').hide()
+         }
+         {% endfor %}
+     
+     if(hidecount<1){
+         $("#researchalert").show()
+
+     }else if(showcount==0){
+         $("#nosearchdoctor").show()
+         $("#researchalert").show()
+         $("#docresearchbtn").hide()
+         $("#resetdoc").show()
+         setMarkers_doctor(null);
+     }
+     else {
+         $("#docresearchbtn").hide()
+         $("#resetdoc").show()
+         $("#nosearchdoctor").hide()
+         setMarkers_doctor(null);
+         reloadmap(0, filtermarkerlist)
+         setMarkers_filter(map)
+     }
+    })
+
+    {% for doctor in doctorlist %}
+            var doctormodalctx = document.getElementById('doctorChart{{ doctor.id }}').getContext('2d');
+            var doctordata = {
+                // The type of chart we want to create
+                type: 'bar',
+                // The data for our dataset
+                data: {
+                    datasets: [{
+                        data: {{ resultdoctors[doctor.id] }},
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(0, 170, 80, 0.2)',
+                            'rgba(255, 30, 0, 0.2)'
+                        ]
+                    }],
+                    labels:['치과교정과','치과보철과','치과보존과','치주과','구강악안면외과','구강내과','소아치과']
+                },
+                // Configuration options go here
+                options: {
+                    scales: { yAxes: [{ ticks: { beginAtZero:true } }] } ,
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                           label: function(tooltipItem) {
+                                  return tooltipItem.yLabel;
+                           }
+                        }
+                    }
+                }
+            };
+            var doctormodalchart = new Chart(doctormodalctx, doctordata);
+        {% endfor %}
+
+
+
+
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapOption = {
+                {% if hospitallist %}
+                center: new kakao.maps.LatLng({{ hospitallist[0].xloc }}, {{ hospitallist[0].yloc }}), // 지도의 중심좌표
+                    {% else %}
+               center: new kakao.maps.LatLng({{ doctorlist[0].xloc }}, {{ doctorlist[0].yloc }}), // 지도의 중심좌표
+                {% endif %}
+                level: 4 // 지도의 확대 레벨
+            };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+        var positions_doctor = [];
+        var positions_hospital = [];
+
+        var mapmarkers_doctor = []
+        var mapmarkers_hospital = []
+
+        {% for doctor in doctorlist %}
+
+            positions_doctor.push({
+                content: '<span class = "badge badge-primary">{{ loop.index }}번 {{ doctor.name }}</span>',
+                latlng: new kakao.maps.LatLng({{ doctor.xloc }},{{ doctor.yloc }}),
+                docid:"{{ doctor.id }}"
+            })
+            var imageSrc = "./static/doctor.png"
+
+        {% endfor %}
+
+        {% for hospital in hospitallist %}
+            var hosid = "{{ hospital.id }}"
+            positions_hospital.push({
+                content: '<span class = "badge badge-primary">{{ hospital.name }}</span>',
+                latlng: new kakao.maps.LatLng({{ hospital.xloc }},{{ hospital.yloc }})
+                , hosid:hosid
+            })
+
+        {% endfor %}
+
+
+
+
+        for (var i = 0; i < positions_doctor.length ; i++) {
+            var imageSrc = "./static/doctor.png"
+            var imageSize = new kakao.maps.Size(30, 30)
+            var imageOption = {offset: new kakao.maps.Point(15, 50)}
+            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: positions_doctor[i].latlng,
+                image: markerImage
+            });
+            var overlay = new kakao.maps.CustomOverlay({
+                content: positions_doctor[i].content,
+                map: map,
+                position: positions_doctor[i].latlng,
+                yAnchor: 1
+            });
+
+            kakao.maps.event.addListener(marker, 'click', function () {
+                 var topnum = $('#infopage').offset().top
+                 var pagenum = $('#doc_3185').offset().top
+	        $('#infopage').animate({scrollTop : '-=100'}, 400);
+        });
+            mapmarkers_doctor.push({"markers":marker, "overlay":overlay})
+        }
+        for (var i = 0; i < positions_hospital.length ; i++) {
+            var imageSrc = "./static/hospital.png"
+            var imageSize = new kakao.maps.Size(30, 30)
+            var imageOption = {offset: new kakao.maps.Point(15, 50)}
+            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: positions_hospital[i].latlng,
+                image: markerImage
+            });
+
+            {#marker.setMap(map);#}
+
+            var overlay = new kakao.maps.CustomOverlay({
+                content: positions_hospital[i].content,
+                map: map,
+                position: positions_hospital[i].latlng,
+                yAnchor: 1
+            });
+
+            mapmarkers_hospital.push({"id":positions_hospital[i].hosid,"markers":marker, "overlay":overlay})
+        }
+        function setMarkers_doctor(map) {
+            for (var i = 0; i < mapmarkers_doctor.length; i++) {
+                mapmarkers_doctor[i]["markers"].setMap(map);
+                mapmarkers_doctor[i]["overlay"].setMap(map);
+            }
+        }
+        function setMarkers_hospital(map) {
+            for (var i = 0; i < mapmarkers_hospital.length; i++) {
+                mapmarkers_hospital[i]["markers"].setMap(map);
+                mapmarkers_hospital[i]["overlay"].setMap(map);
+            }
+        }
+
+    setMarkers_hospital(map);
+    setMarkers_doctor(null);
+
+
+    $('#categorycheck').change(function () {
+        if($("#categorycheck").is(":checked")){
+            $('#hospage').hide()
+                     $('#hostable').hide()
+              $('#doctorpage').show()
+                $('#doctable').show()
+            setMarkers_filter(null);
+            setMarkers_hospital(null);
+            setMarkers_doctor(map);
+
+        }else{
+            $('#doctorpage').hide()
+                $('#doctable').hide()
+              $('#hospage').show()
+                $('#hostable').show()
+            setMarkers_filter(null);
+            setMarkers_doctor(null);
+            setMarkers_hospital(map);
+        }
+    })
+
+    function reloadmap(flag, idlist) {
+        mapmarkers = []
+        var remarkerlist = [];
+        if (flag == 0) {
+            {% for doctor in doctorlist %}
+                for (var j = 0; j < idlist.length; j++) {
+                    if ({{   doctor.id }} == idlist[j]
+                )
+                    {
+                        remarkerlist.push({
+                            content: '<span class = "badge badge-primary">{{ doctor.name }}</span>',
+                            latlng: new kakao.maps.LatLng({{ doctor.xloc }}, {{ doctor.yloc }})
+                        })
+                    }
+                }
+            {% endfor %}
+            var imageSrc = "./static/doctor.png"
+        } else {
+            {% for hospital in hospitallist %}
+                for (var j = 0; j < idlist.length; j++) {
+                    if ({{ hospital.id }} == idlist[j]
+                )
+                    {
+                        remarkerlist.push({
+                            content: '<span class = "badge badge-primary">{{ hospital.name }}</span>',
+                            latlng: new kakao.maps.LatLng({{ hospital.xloc }}, {{ hospital.yloc }})
+                        })
+                    }
+                }
+            {% endfor %}
+            var imageSrc = "./static/hospital.png"
+        }
+
+        var imageSize = new kakao.maps.Size(30, 30);
+        var imageOption = {offset: new kakao.maps.Point(15, 50)};
+        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+        for (var i = 0; i < remarkerlist.length; i++) {
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: remarkerlist[i].latlng,
+                image: markerImage
+            });
+
+            {#marker.setMap(map);#}
+
+            var overlay = new kakao.maps.CustomOverlay({
+                content: remarkerlist[i].content,
+                map: map,
+                position: remarkerlist[i].latlng,
+                yAnchor: 1
+            });
+
+
+            mapmarkers.push({"markers": marker, "overlay": overlay})
+        }
+    }
+
+
+
+        function setMarkers_filter(map) {
+            for (var i = 0; i < mapmarkers.length; i++) {
+                mapmarkers[i]["markers"].setMap(map);
+                mapmarkers[i]["overlay"].setMap(map);
+            }
+        }
+
+
+
+
+
+
+
+    </script>
+
+
+
+{% endblock contents %}

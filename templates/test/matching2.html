@@ -1,0 +1,171 @@
+{% extends 'mainindex.html' %}
+
+
+{% block contents %}
+
+
+<!DOCTYPE html>
+
+<div class="container-fluid top-buffer modal fade" id="exampleModal">
+<div class="row align-items-start ">
+    <div class="col align-self-center">
+        지도 표시 예정
+    </div>
+    <div class="col">
+        <div class="card" style="width: 49rem; height: 70rem">
+        <div class="row align-items-center " >
+            <div class="col-sm-12 col-md-4 col-lg-4" >
+                <div class="media">
+                      <img src= {{ url_for('static', filename="images/doctor_icon.jpg")}} >
+                      <div class="media-body">
+                        <h3 class="mt-0">
+                            홍길동
+                        </h3>
+                      </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4">
+                <button type="button" class="btn btn-success" data-container="body" data-toggle="popover" data-placement="bottom"
+                        data-content="입과 턱과 얼굴부위의 외과적인 치료를 전문으로 시행하는 과입니다. ">
+                  구강악안면외과 전문의
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-start">
+            <div class="col-lg-6">
+                <div class="card" style="width: 22rem; height: 30rem">
+                  <div class="card-body">
+                    <h5 class="card-title">
+                        잎사귀 치과 병원
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <a href="#" class="card-link">www.5ok.co.kr/</a>
+                    </h6>
+                    <p class="card-text">
+                        사랑니 발치 전문 병원
+                    </p>
+                    <p class="card-text">
+                      <div class="row">
+                        <div class="col-lg-3">주소
+                        </div>
+                        <div class="col-lg-9">
+                            서울특별시 서대문구 연세로 5길 26 준빌딩(5층, 7층, 9층)
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-4">
+                            영업시간
+                        </div>
+                        <div class="col-lg-8">
+                            09:00 ~ 17:00
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-lg-6">병원 키워드
+                        </div>
+                        <div class="col-lg-6 align-content-start">
+
+                            <button type="button" class="btn btn-primary">임플란트</button>
+                            <button type="button" class="btn btn-secondary">발치</button>
+
+                        </div>
+                      </div>
+                    </p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="col">
+                <div class="card" style="width: 22rem; height: 30rem">
+                  <div class="card-body">
+                    <h5 class="card-title">
+                        <div class="row align-items-start">
+                            <div class="col-lg-6">
+                            증상 유사도
+                            </div>
+                            <div class="col-lg-6">
+                                87 / 100
+                            </div>
+                        </div>
+                    </h5>
+
+                    <p class="card-text">
+                      <div class="row align-items-start">
+                      <div class="col-sm-12 col-md-4 col-lg-6">
+                          주요진료1
+                      </div>
+                      <div class="col-sm-12 col-md-4 col-lg-6">
+                          <div class="progress">
+                          <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                      </div>
+                      </div>
+                      <div class="row align-items-start">
+                      <div class="col-sm-12 col-md-4 col-lg-6">
+                          주요진료2
+                      </div>
+                      <div class="col-sm-12 col-md-4 col-lg-6">
+                          <div class="progress">
+                          <div class="progress-bar" role="progressbar" style="width: 70%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                      </div>
+                      </div>
+                      <div class="row align-items-start">
+                      <div class="col-sm-12 col-md-4 col-lg-6">
+                          주요진료3
+                      </div>
+                      <div class="col-sm-12 col-md-4 col-lg-6">
+                          <div class="progress">
+                          <div class="progress-bar align-items-end" role="progressbar" style="width: 60%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                      </div>
+                      </div>
+                    </p>
+                    <div class="row">
+
+
+                        <div class = 'col'>
+                            의사 키워드
+                        </div>
+                        <div class="col" >
+                        </div>
+                    </div>
+                    <div class="row">
+                      <button type="button" class="btn btn-primary">소아진료</button>
+                      <button type="button" class="btn btn-secondary">임플란트</button>
+                        <button type="button" class="btn btn-secondary">스케일링</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            </div>
+        </div>
+            <div class="card" style="width: auto; height: auto">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Reviews
+                    </h5>
+                </div>
+            </div>
+            <div class="card" style="width: auto; height: auto">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Reports
+                    </h5>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    </div>
+  </div>
+
+</div>
+
+    <script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+</script>
+{% endblock contents %}

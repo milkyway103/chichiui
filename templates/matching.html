@@ -1,0 +1,399 @@
+{% extends 'mainindex.html' %}
+
+{% block contents %}
+    <div class="container-fluid">
+        {% if userresult.result != None %}
+            <div class="row" stylem="margin-bottom: 10px">
+                <div class = "col">
+                    <div class="alert alert-success" role="alert">
+                        <b>{{ userresult.name }}</b> 님과 <b>{{ doctorlist|length }}</b> 명의 의사가 매칭되었습니다.
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-3">
+                <div class="card overflow-auto" style="height: 700px;">
+                    <div class="card-header">
+                        <b>{{ userresult.name }}</b> 님의 증상을 분석한 결과
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                        {% if userresult.result == None %}
+                            <p class="card-text">아직 분석 결과가 없습니다. <br> 메인 페이지에서 문진표를 작성하고 와 주세요!</p>
+                            <div class="mx-auto">
+                                <button type="button" class="btn btn-outline-primary" style="margin-bottom: 20px;">분석하러 가기</button>
+                                </div>
+                        {% else %}
+                            <p class="card-text">
+                                <canvas id="myChart"></canvas>
+                            </p>
+                            <p>{{ userresult.name }} 님은 <br>
+                            {% for idx in userresult.result %}
+                                {% if idx[1] >= 20 %}
+                                    <b class="explainpopover" data-hover-content="<div class='card' style='padding:10px;width:200px'>{{ coursedict[idx[0]] }}</div>" style="color:#e53a40">{{ idx[0] }}</b> 에
+                                    <b style="color:cornflowerblue ">{{ idx[1] }}%</b> 확률 <br>
+                                {% elif idx[1] >= 10 %}
+                                    <b class="explainpopover" data-hover-content="<div class='card' style='padding:10px;width:200px'>{{ coursedict[idx[0]] }}</div>">{{ idx[0] }}</b> 에
+                                    <b>{{ idx[1] }}%</b> 확률 <br>
+                                {% endif %}
+                            {% endfor %}
+                            로 매칭되었습니다.
+                            </p>
+                            <p>
+                            우측의 지도와 리스트에서 {{ userresult.name }} 님의 증상을 분석한 결과와 유사도를 계산하여 매칭된 의사들을 보실 수 있습니다.
+                            </p>
+
+                        {% endif %}
+                    </div>
+                    <div class="mx-auto">
+                        <a href="/research" class="btn btn-outline-primary" style="margin-bottom: 20px;">분석 방법 알아보러 가기</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div id="map" style="height:700px;"></div>
+            </div>
+            <div class="overflow-auto col-3" style="height: 700px;" id="matchingdoctorlist">
+                <!-- for문으로 결과만큼 생기고, 스크롤하면 동적으로 더 생기도록 -->
+                {% for doctor in doctorlist %}
+                    <div class="card" id="doccard_{{ doctor.id }}" onclick="var cardid = 'doccard_{{ doctor.id }}'; doctorcardclick(cardid);">
+                        <div class="card-header">
+                            매칭 유사도 {{ loop.index }}위
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"> {{ doctor.name }}&nbsp;
+                            {% if doctor.specialist %}
+                                <span class="badge badge-info">{{ doctor.specialist }} 전문의</span>
+                            {% endif %}
+                            {% if doctor.recognition %}
+{#                                  {% for ins in institution %}#}
+                                    {#   %}{% if doctor.recognition|int == ins.id %}#}
+                                <span class="badge badge-success"> 인정의</span>
+{#                                    {% endif %}#}
+{#                                {% endfor %}#}
+                            {% endif %}
+                            </h5>
+                            {% if userresult.result != None %}
+                                <canvas id="doctorChart{{ doctor.id }}"></canvas>
+                            {% endif %}
+                            <p class="card-text">{{ hospitallist[loop.index - 1].name }}</p>
+                            <button class="btn btn-outline-primary btn-sm doctorinfo" data-toggle="modal" data-target="#doctorModal{{ doctor.id }}">더 많은 정보 보기</button>
+                            <!-- modal-->
+                                <div class="modal fade doctormodal" id="doctorModal{{ doctor.id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="docname">{{ doctor.name }}
+                                        {% if doctor.specialist %}
+                                <span class="badge badge-info">{{ doctor.specialist }} 전문의</span>
+                            {% endif %}
+                            {% if doctor.recognition %}
+                                <span class="badge badge-success"> {{ doctor.recognition }} 인정의</span>
+                            {% endif %}
+                                        </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                        </button>
+                                      </div>
+                                      <div class="modal-body">
+                                          <p><canvas id="doctormodalChart{{ doctor.id }}"></canvas></p>
+                                          <p>{{ doctor.docinfo | safe }}</p>
+                                          <p>{{ hospitallist[loop.index - 1].region }}</p>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">닫기</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            <!-- modal end -->
+                        </div>
+                    </div>
+                    <br>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var data = {
+            // The type of chart we want to create
+            type: 'pie',
+            // The data for our dataset
+            data: {
+                datasets: [{
+                    data: {{ dataset }},
+                    // These labels appear in the legend and in the tooltips when hovering different arcs
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(0, 170, 80, 0.2)',
+                        'rgba(255, 30, 0, 0.2)'
+                    ]
+                }],
+                labels:[{% for i in labels %}
+                    '{{ i }}',
+                    {% endfor %}]
+            },
+            // Configuration options go here
+            options: {}
+        };
+        var chart = new Chart(ctx, data);
+        {% for doctor in doctorlist %}
+            var doctorctx = document.getElementById('doctorChart{{ doctor.id }}').getContext('2d');
+            var doctordata = {
+                // The type of chart we want to create
+                type: 'bar',
+                // The data for our dataset
+                data: {
+                    datasets: [{
+                        data: {{ resultdocweights[doctor.id] }},
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(0, 170, 80, 0.2)',
+                            'rgba(255, 30, 0, 0.2)'
+                        ]
+                    }],
+                    labels:['치과교정과','치과보철과','치과보존과','치주과','구강악안면외과','구강내과','소아치과']
+                },
+                // Configuration options go here
+                options: {
+                    scales: { yAxes: [{ ticks: { beginAtZero:true } }] } ,
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                           label: function(tooltipItem) {
+                                  return tooltipItem.yLabel;
+                           }
+                        }
+                    }
+                }
+            };
+            var doctorchart = new Chart(doctorctx, doctordata);
+        {% endfor %}
+        {% for doctor in doctorlist %}
+            var doctormodalctx = document.getElementById('doctormodalChart{{ doctor.id }}').getContext('2d');
+            var doctordata = {
+                // The type of chart we want to create
+                type: 'bar',
+                // The data for our dataset
+                data: {
+                    datasets: [{
+                        data: {{ resultdocweights[doctor.id] }},
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(0, 170, 80, 0.2)',
+                            'rgba(255, 30, 0, 0.2)'
+                        ]
+                    }],
+                    labels:['치과교정과','치과보철과','치과보존과','치주과','구강악안면외과','구강내과','소아치과']
+                },
+                // Configuration options go here
+                options: {
+                    scales: { yAxes: [{ ticks: { beginAtZero:true } }] } ,
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        callbacks: {
+                           label: function(tooltipItem) {
+                                  return tooltipItem.yLabel;
+                           }
+                        }
+                    }
+                }
+            };
+            var doctormodalchart = new Chart(doctormodalctx, doctordata);
+        {% endfor %}
+        const links = document.getElementsByClassName("explainpopover");
+        [...links].forEach(link => {
+            link.addEventListener("mouseover", handleMouseOver);
+            link.addEventListener("mousemove", handleMouseMove);
+            link.addEventListener("mouseleave", handleMouseLeave);
+        });
+        function handlePosition(e) {
+          const ID = e.target.getAttribute("data-hover-id");
+          const wrapper = document.getElementById(ID);
+          let top = "";
+          if (
+            !(e.target.getBoundingClientRect().top + wrapper.offsetHeight > innerHeight)
+          ) {
+            top = `${e.clientY + e.target.offsetHeight}px`;
+          } else {
+            top = `${e.clientY - (wrapper.offsetHeight + e.target.offsetHeight)}px`;
+          }
+
+          return `position: fixed; left: ${e.clientX -
+            wrapper.offsetWidth / 2}px; top:${top}`;
+        }
+        function handleMouseOver(e) {
+          const hoverContent = e.target.getAttribute("data-hover-content");
+          const ID = Math.random()
+            .toString(36)
+            .substr(2, 9);
+          const wrapper = document.createElement("DIV");
+          e.target.setAttribute("data-hover-id", ID);
+          wrapper.setAttribute("data-hover-wrapper", "");
+          wrapper.setAttribute("id", ID);
+          wrapper.setAttribute("style", "opacity: 0; transform: scale(.8)");
+          wrapper.innerHTML = hoverContent;
+          document.body.append(wrapper);
+          wrapper.setAttribute("style", handlePosition(e));
+
+          // You can remove this line when you are using. I had added for the demo.
+          if (document.querySelector('.info')) document.querySelector('.info').remove();
+
+        }
+
+        function handleMouseLeave(e) {
+          const ID = e.target.getAttribute("data-hover-id");
+          document.getElementById(ID).style.opacity = 0;
+          document.getElementById(ID).style.transform = "scale(.8)";
+          setTimeout(() => {
+            document.getElementById(ID).remove();
+          }, 150);
+        }
+
+        function handleMouseMove(e) {
+          const ID = e.target.getAttribute("data-hover-id");
+          const wrapper = document.getElementById(ID);
+          wrapper.setAttribute("style", handlePosition(e));
+        }
+
+        window.addEventListener('scroll', () => {
+          const wrapper = document.querySelector('[data-hover-wrapper]');
+          if (wrapper) wrapper.remove();
+        });
+    </script>
+    <script>
+        var popovercontent = "<canvas id='myChart' width='400' height='400'></canvas>"; {# html code가 들어갈 수 있음! #}
+        {% if userresult.result == None %}
+            popovercontent = "아직 분석 결과가 없습니다. 메인 화면에서 문진표를 작성해주세요!"
+        {% else %}
+            popovercontent = {{ userresult.result|safe }}
+        {% endif %}
+
+        $(document).ready(function() {
+            $('#userpopover').popover({placement: 'right', content: popovercontent, trigger: 'hover'})
+        });
+    </script>
+
+    <script>
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapOption = {
+                center: new kakao.maps.LatLng({{ hospitallist[0].xloc }}, {{ hospitallist[0].yloc }}), // 지도의 중심좌표
+                level: 6 // 지도의 확대 레벨
+            };
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+        var matchingmarkers = []
+        var positions = [];
+        var hospitaloverlap = []
+        {% for hospital in hospitallist %}
+            {#console.log("{{ dochos[hospital.id]|safe }}")#}
+            var names = ""
+            {% set doclist = dochos[hospital.id].split(" ") %}
+            var list_ = {{ doclist|safe }}
+            {% for doctor in doctorlist %}
+                if(list_.includes("{{ doctor.id }}")){
+                    names+="{{doctor.name}}"+" "
+                }
+            {% endfor %}
+
+            positions.push({
+                content: '<span class = "badge badge-primary">'+names+'</span>',
+                latlng: new kakao.maps.LatLng({{ hospital.xloc }},{{ hospital.yloc }})})
+        {% endfor %}
+
+        var imageSrc = "./static/doctor.png",
+            imageSize = new kakao.maps.Size(30, 30),
+            imageOption = {offset: new kakao.maps.Point(15, 50)};
+
+        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+        var selectmarkerImage = new kakao.maps.MarkerImage(
+    './static/selectdoctor.png',
+    new kakao.maps.Size(30, 30), new kakao.maps.Point(15, 50));
+
+        for (var i = 0; i < positions.length ; i++) {
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: positions[i].latlng,
+                image: markerImage
+            });
+
+            {#marker.setMap(map);#}
+
+            var overlay = new kakao.maps.CustomOverlay({
+                content: positions[i].content,
+                map: map,
+                position: positions[i].latlng,
+                yAnchor: 1
+            });
+
+            kakao.maps.event.addListener(marker, 'mouseover', function() {
+                overlay.setMap(map);
+            });
+            kakao.maps.event.addListener(marker, 'mouseout', function() {
+                overlay.setMap(map);
+                {#overlay.setMap(null);#}
+                {# moseover하면 마지막 마커에만 이벤트 적용되는 문제 #}
+            });
+            matchingmarkers.push({"markers":marker, "overlay":overlay})
+        }
+
+        {#function setMarkers(map) {#}
+        {#    for (var i = 0; i < matchingmarkers.length; i++) {#}
+        {#        matchingmarkers[i]["markers"].setMap(map);#}
+        {#        matchingmarkers[i]["overlay"].setMap(map);#}
+        {#    }}#}
+        {#setMarkers(matchingmarkers)#}
+        var bounds = new kakao.maps.LatLngBounds();
+        var selectedmarker = null
+        function doctorcardclick(tag){
+            bounds=new kakao.maps.LatLngBounds();
+            {% for doctor in doctorlist %}
+                if("doccard_{{ doctor.id }}" == tag){
+                    var xloc = {{ hospitallist[loop.index0].xloc }}
+                    var yloc = {{ hospitallist[loop.index0].yloc }}
+                    bounds.extend(new kakao.maps.LatLng(xloc, yloc))
+                    setBounds()
+                    markerdict = {Ga:yloc,Ha:xloc}
+                    for(var i = 0; i<matchingmarkers.length;i++){
+                        curmarker = matchingmarkers[i]['markers'].getPosition()
+                        if(curmarker['Ha'].toFixed(6)==markerdict['Ha'].toFixed(6) && curmarker['Ga'].toFixed(6)==markerdict['Ga'].toFixed(6)){
+                            if (!selectedmarker || selectedmarker !== matchingmarkers[i]['markers']) {
+                                !!selectedmarker && selectedmarker.setImage(markerImage);
+                            }
+                            matchingmarkers[i]['markers'].setImage(selectmarkerImage)
+                            selectedmarker = matchingmarkers[i]['markers']
+                        }
+                    }
+                }
+            {% endfor %}
+        }
+        function setBounds() {
+    // LatLngBounds 객체에 추가된 좌표들을 기준으로 지도의 범위를 재설정합니다
+    // 이때 지도의 중심좌표와 레벨이 변경될 수 있습니다
+    map.setBounds(bounds);}
+    </script>
+
+
+{% endblock contents %}

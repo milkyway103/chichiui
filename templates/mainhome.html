@@ -1,0 +1,170 @@
+
+{% extends 'mainindex.html' %}
+
+
+{% block contents %}
+<style>
+    #homeinput input {
+        margin-top: 40px;
+        margin-bottom: 40px;
+        display: block;
+        border: none;
+        border-bottom: 2px solid #ebebeb;
+    }
+        input:focus, select:focus {
+        color: #222;
+        border-bottom: 2px solid #4966b1;
+        }
+
+    h2,h3{
+        float: left;
+        margin-bottom: 40px;
+        display: block;
+    }
+    .form-group-1 .row{
+        margin-bottom: 70px;
+    }
+    #homeinput{
+       box-shadow: 2px 2px 2px 2px gray;
+        padding-top:20px;
+        padding-bottom: 5px;
+        background: rgb(254,255,255); /* Old browsers */
+        background: rgb(254,255,255); /* Old browsers */
+/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#feffff+0,f9f9f9+63,ffffff+96,f7f7f7+96,f7f7f7+96,ffffff+100 */
+background: rgb(254,255,255); /* Old browsers */
+background: -moz-linear-gradient(-45deg, rgba(254,255,255,1) 0%, rgba(249,249,249,1) 63%, rgba(255,255,255,1) 96%, rgba(247,247,247,1) 96%, rgba(247,247,247,1) 96%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(-45deg, rgba(254,255,255,1) 0%,rgba(249,249,249,1) 63%,rgba(255,255,255,1) 96%,rgba(247,247,247,1) 96%,rgba(247,247,247,1) 96%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(135deg, rgba(254,255,255,1) 0%,rgba(249,249,249,1) 63%,rgba(255,255,255,1) 96%,rgba(247,247,247,1) 96%,rgba(247,247,247,1) 96%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feffff', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    }
+
+
+</style>
+
+  <div class="container align-content-center">
+
+    <form action="/matching" method="POST" id="patientmatching" style="margin-bottom:20px">
+           <div class="container" id="homeinput" style="width: 60%; margin-top:30px" >
+                <div class="alert alert-info" style="margin-top:10px; font-size:30px" ><b>증상을 입력해주세요</b></div>
+                  <div class="form-group-1">
+                      <input class="form-control" type="text" name="name" id="name" placeholder="성함을 입력해주세요" required />
+                      <div class="row">
+                          <div class="col">
+                              <label for="exampleFormControlSelect1" style="float:left">지역 도, 시</label>
+                                <select class="form-control" id="selectlocate1" name="locate1">
+                                  <option disabled value="0">전체 지역(준비중)</option>
+                                  <option selected value="1">서울특별시</option>
+                                </select>
+                          </div>
+                          <div class="col">
+                              <label for="exampleFormControlSelect1" style="float:left">지역구</label>
+                                <select class="form-control" id="selectlocate2" name="locate2">
+                                  <option selected value=0>전체 구역</option>
+                                  {% for _ in ["강남구","강동구","강북구","강서구","관악구","광진구","구로구","금천구","노원구","도봉구","동대문구","동작구","마포구","서대문구","서초구","성동구","성북구","송파구","양천구","영등포구","용산구","은평구","종로구","중구","중랑구"] %}
+                                  <option value={{loop.index}}>{{ _ }}</option>
+                                  {% endfor %}
+ㄴ
+                                </select>
+                          </div>
+
+                      </div>
+                    <label>키워드를 선택해주세요.</label>
+                    <div class="row">
+                            <select class="col-4" id="sickchocies1" name="sick1" multiple >
+                            </select>
+                        <select class="col-4" id="sickchocies2"  name="sick2" multiple value="adsfasf">
+                            </select>
+                         <select class="col-4" id="sickchocies3"  name="sick3" multiple>
+                            </select>
+                    </div>
+
+                  </div>
+
+                  <div class="form-group">
+                    <label for="exampleFormControlTextarea1" style="float: left">증상을 선택하기 힘들면 적어주세요</label>
+                    <textarea class="form-control" id="sick_describe" name="sick_describe" rows="3"
+                    placeholder="예시) 우리 아이의 치아가 흔들려.."></textarea>
+                  </div>
+
+                    <input type="submit" class="form-control" value="제출">
+
+           </div>
+    </form>
+  </div>
+
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" id="searching">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5><b>매칭 진행중 잠시만 기다려주세요</b></h5>
+          </div>
+                <div class="modal-body text-center">
+                    <p class="center">
+                        <b class="alert-primary" id="matchingtitle"></b>님을 위해 <b>3245</b>명의 의사가 대기중입니다.
+                        </p>
+                      <div class="spinner-border " role="status">
+                          <span class="sr-only">Loading...</span>
+                      </div>
+                </div>
+    </div>
+  </div>
+</div>
+
+
+    <script>
+
+        $("#patientmatching").submit(function () {
+            var formdata = $("#patientmatching").serialize()
+            if($("#sickchocies1").val().length==0 && $("#sickchocies2").val().length==0&&$("#sickchocies3").val().length==0&&$("#sick_describe").val()==""){
+                alert("최소 한개의 증상을 입력해주세요.")
+                return false
+            }
+            $("#matchingtitle").text(String($("#name").val()))
+            $("#exampleModalCenter").modal('show')
+
+        })
+    new SlimSelect({
+        select: '#sickchocies1',
+        data: [{'text': '가지런하지 못한 치아'}, {'text': '가철성 유지장치'}, {'text': '가철성 의치'}, {'text': '고정성 보철'}, {'text': '고정식 유지장치'}, {'text': '골융기제거술'}, {'text': '과잉치'}, {'text': '과잉치 교정'}, {'text': '교정장치'}, {'text': '교정치료'}, {'text': '교합 부조화'},
+            {'text': '교합조정'}, {'text': '구강건조증'}, {'text': '구강내과'}, {'text': '구강악안면외과'}, {'text': '구강안면통증'}, {'text': '구강암'}, {'text': '구강운동장애'}, {'text': '구강위생용품'}, {'text': '구강작열감증후군'}, {'text': '구강점막질환'}, {'text': '구순구개열'}, {'text': '구외 장치'},
+            {'text': '구취'}, {'text': '구취예방'}, {'text': '국소의치'}, {'text': '귀쪽 통증'}, {'text': '근관치료'}, {'text': '근육질환'}, {'text': '금관 치료'}, {'text': '대문니'}, {'text': '덧니'}, {'text': '돌출된 턱'}, {'text': '돌출입'}, {'text': '두경부동통'}, {'text': '똑딱이 틀니'}, {'text': '라미네이트'},
+            {'text': '레진 치료'}, {'text': '마이크로임플란트'}, {'text': '매복사랑니 발치'}, {'text': '무턱'}, {'text': '미각장애'}, {'text': '미니 스크류'}, {'text': '반대교합'}, {'text': '발육치아'}, {'text': '발치'}, {'text': '변색치아'}, {'text': '보철물'}, {'text': '보철치료'}, {'text': '복합레진 수복'}, {'text': '부분의치'},
+            {'text': '부분틀니'}, {'text': '부정교합'}, {'text': '불소 도포'}, {'text': '불소 양치'}, {'text': '브리지 치료'}, {'text': '블랙트라이앵글'}, {'text': '비대칭 얼굴'}, {'text': '빠진 치아'}, {'text': '뻐드렁니'}, {'text': '선수술교정'}, {'text': '설측교정'},
+            {'text': '세라믹 치아'}, {'text': '소아 충치치료'}, {'text': '소아 치과외상'}, {'text': '소아교정'}, {'text': '소아치과'}, {'text': '수돗물 불소화'}, {'text': '수면무호흡증'}, {'text': '수복물'}, {'text': '수복치료'}, {'text': '순소대'}, {'text': '순측교정'}, {'text': '쉐그렌 증후군'}, {'text': '스케일링'}, {'text': '시린이'}, {'text': '심미보철'}, {'text': '심미보철치료'}, {'text': '씹을 때'}]
+        ,
+        placeholder:"키워드 ㄱ - ㅅ"
+
+    })
+    new SlimSelect({
+          select: '#sickchocies2',
+        data:[
+            {'text': '아기치과'}, {'text': '아기치아'}, {'text': '아래턱) 두 개악안면)'}, {'text': '아말감 수복'}, {'text': '아이 이빨'}, {'text': '악골(위턱'}, {'text': '악관절증'}, {'text': '악교정 수술'}, {'text': '악안면 교정 수술'}, {'text': '악정형 교정장치'}, {'text': '악정형 치료'}, {'text': '악정형치료'}, {'text': '안면 비대칭'}, {'text': '앞니 영구치 교정'}, {'text': '앞니가 깨짐'},
+            {'text': '애 치아'}, {'text': '양악수술'}, {'text': '양치질'}, {'text': '어린이 수면진정치료'}, {'text': '어린이 영구치'}, {'text': '어린이 유치'}, {'text': '어린이 이빨'}, {'text': '어린이 치과'}, {'text': '어린이치과'}, {'text': '언청이'}, {'text': '영유아 치아'}, {'text': '예방교정'}, {'text': '옥니'}, {'text': '온레이'}, {'text': '완전틀니'}, {'text': '왜소한 턱'}, {'text': '우리아이 치아'},
+            {'text': '위아래가 다뭄'}, {'text': '윗니가 튀어나옴'}, {'text': '유아치'}, {'text': '유아치과'}, {'text': '유아치아 청소년치과'}, {'text': '유합치'}, {'text': '음식 먹을 때'}, {'text': '의도적 재식술'}, {'text': '이가 시림'}, {'text': '이갈이'}, {'text': '이닦기'}, {'text': '이명'}, {'text': '이빨이 깨져'}, {'text': '이뿌리'}, {'text': '이사이가 벌어진 치열'}, {'text': '인공치관'}, {'text': '인공치근'},
+            {'text': '인공치아'}, {'text': '인레이'}, {'text': '인상채득'}, {'text': '임시보철물'}, {'text': '임플란트'}, {'text': '임플란트 보철물'}, {'text': '임플란트 주위염'}, {'text': '입냄새'}, {'text': '입벌릴 때 턱'}, {'text': '입술의 돌출'}, {'text': '입이 튀어나와서 교정'}, {'text': '잇몸 농양'}, {'text': '잇몸병'}, {'text': '잇몸뼈가 녹은'}, {'text': '잇몸성형'}, {'text': '잇몸염증'}, {'text': '잇몸이 내려감'}, {'text': '잇몸치료'}, {'text': '자가치아이식'}, {'text': '자석틀니'}, {'text': '자연치아'}, {'text': '자일리톨'}, {'text': '재교정 치료'}, {'text': '재식술'},
+            {'text': '정상교합'}, {'text': '젖니 영구치 공간'}, {'text': '주걱턱'}, {'text': '주걱턱 교정'}
+        ],placeholder:"키워드 ㅇ - ㅈ"}
+        )
+    new SlimSelect({
+          select: '#sickchocies3',
+        data:[ {'text': '청소년치'}, {'text': '총의치'}, {'text': '충치치료'}, {'text': '측두하악관절질환'}, {'text': '치근 흡수'}, {'text': '치근단'}, {'text': '치근단 수술'}, {'text': '치근단절제'}, {'text': '치면열구전색'}, {'text': '치석'}, {'text': '치석 제거'}, {'text': '치수강'}, {'text': '치수괴사'}, {'text': '치수질환'}, {'text': '치수치료'}, {'text': '치실'}, {'text': '치아 교정 시기'}, {'text': '치아 균열'}, {'text': '치아 배열'}, {'text': '치아 불규칙'}, {'text': '치아 브라켓'}, {'text': '치아 뼈이식술'}, {'text': '치아 뿌리'}, {'text': '치아 삐뚤삐뚤'}, {'text': '치아 사이의 공간'},
+            {'text': '치아 속도'}, {'text': '치아 수복'}, {'text': '치아 신경치료'}, {'text': '치아 이동'}, {'text': '치아 인공뼈'}, {'text': '치아 표백'}, {'text': '치아가 깨짐'}, {'text': '치아가 나올 공간'}, {'text': '치아가 불규칙'}, {'text': '치아교정'}, {'text': '치아미백'}, {'text': '치아배열'}, {'text': '치아우식증'}, {'text': '치아홈메우기'}, {'text': '치약'}, {'text': '치은염'}, {'text': '치은절제술'}, {'text': '치은질환'}, {'text': '치은퇴축'},
+            {'text': '치조골'}, {'text': '치조골성형술'}, {'text': '치주'}, {'text': '치주낭'}, {'text': '치주병'}, {'text': '치주염'}, {'text': '치주질환'}, {'text': '치주치료'}, {'text': '치태'}, {'text': '칫솔 보관'}, {'text': '칫솔질'}, {'text': '코골이'}, {'text': '크라운 치료'}, {'text': '탁관절 이상'}, {'text': '턱 디스크'}, {'text': '턱관절'}, {'text': '턱관절 디스크'}, {'text': '턱관절 장애'}, {'text': '턱관절질환'}, {'text': '턱교정'}, {'text': '턱에 이상'},
+            {'text': '턱에서 딱딱소리'}, {'text': '턱에서 소리'}, {'text': '턱이 뻐근'}, {'text': '턱이 아파요'}, {'text': '투명 교정장치'}, {'text': '투명교정'}, {'text': '튀어 나온 앞니'}, {'text': '특수틀니'}, {'text': '틀니'}, {'text': '틀니고리'}, {'text': '풍치'}]
+    ,placeholder:"키워드 ㅊ - ㅎ"}
+        )
+    </script>
+
+    <style>
+    #searching,#searching div{
+        background-color: rgba( 255, 255, 255, 0.5 );
+    }
+
+    </style>
+
+
+
+
+
+
+{% endblock contents %}

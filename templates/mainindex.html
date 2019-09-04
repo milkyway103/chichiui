@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <script src="{{ url_for('static', filename = 'js/jquery-3.4.1.min.js') }}" ></script>
+      <link rel="stylesheet"  type="text/css" href={{ url_for('static', filename='css/bootstrap.min.css') }}>
+      <link rel="stylesheet"  type="text/css" href={{ url_for('static', filename='css/jquery-ui.css') }}>
+      <link rel="stylesheet"  type="text/css" href={{ url_for('static', filename='css/bootstrap-toggle.min.css') }}>
+      <link rel="stylesheet"  type="text/css" href={{ url_for('static', filename='css/slimselect.min.css') }}>
+
+      <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}" ></script>
+        <script src="{{ url_for('static', filename = 'js/jquery-ui.min.js') }}" ></script>
+      <script src="{{ url_for('static', filename = 'js/jquery.autocomplete.min.js') }}" ></script>
+    <script src="{{ url_for('static', filename = 'js/bootstrap-toggle.min.js') }}" ></script>
+          <script src="{{ url_for('static', filename = 'js/Chart.min.js') }}" ></script>
+<script src="{{ url_for('static', filename = 'js/slimselect.min.js') }}" ></script>
+
+      <title>치치의</title>
+      <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=1bdab464ed962fe2000b676e06982789"></script>
+
+
+  </head>
+
+
+  <body>
+
+
+
+{% include "topmenu.html" %}
+
+
+
+{%  block contents %}
+      <!-- 수정해야할 부분 -->
+{% endblock contents %}
+
+
+
+  </body>
+</html>

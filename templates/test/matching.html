@@ -1,0 +1,81 @@
+{% extends 'mainindex.html' %}
+
+{% block contents %}
+    <div class="container-fluid" style="padding-top:100px;">
+        <div class="row">
+            <div class="col-8">
+                <div id="map" style="height:700px;"></div>
+            </div>
+            <div class="overflow-auto col-4" style="height: 700px;">
+                <!-- for문으로 결과만큼 생기고, 스크롤하면 동적으로 더 생기도록 -->
+                <div id="doctorlist">
+                    {% for doctor in doctorlist %}
+                        <div class="card">
+                          <div class="card-header">
+                            매칭 유사도 {{ loop.index }}위
+                          </div>
+                          <div class="card-body">
+                            <h5 class="card-title"> {{ doctor['name'] }}&nbsp;
+                                {% if doctor['specialist'] %}
+                                    <button type="button" class="btn btn-primary btn-sm">전문의</button>
+                                {% endif %}
+                                {% if doctor['recognition'] %}
+                                    <button type="button" class="btn btn-success btn-sm">인정의</button>
+                                {% endif %}
+                            </h5>
+                            <p class="card-text">{{ doctor['hospital'] }}</p>
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">더 많은 정보 보기</button>
+
+                              <!-- modal-->
+                          {% include "matching2.html" %}
+                          <!-- modal end -->
+
+
+
+
+
+
+
+
+                          </div>
+                        </div>
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6d922728b9bf4aa65206c6f9240c1806"></script>
+	<script>
+		var container = document.getElementById('map');
+		var options = {
+			center: new kakao.maps.LatLng(33.440701, 126.570667),
+			level: 3
+		};
+
+		var map = new kakao.maps.Map(container, options);
+	</script>
+    <script>
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapOption = {
+                center: new kakao.maps.LatLng(33.440701, 126.570667), // 지도의 중심좌표
+                level: 3 // 지도의 확대 레벨
+            };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+        // 마커가 표시될 위치입니다
+        var markerPosition  = new kakao.maps.LatLng(33.440701, 126.570667);
+
+        // 마커를 생성합니다
+        var marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
+
+        // 아래 코드는 지도 위의 마커를 제거하는 코드입니다
+        // marker.setMap(null);
+    </script>
+{% endblock contents %}
